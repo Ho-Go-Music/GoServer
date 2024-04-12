@@ -2,11 +2,21 @@ package diylog
 
 import (
 	"go.uber.org/zap"
+	"sync"
 )
 
-func NewLogger() *zap.SugaredLogger {
-	logger, _ := zap.NewProduction()
-	defer logger.Sync() // flushes buffer, if any
+var (
+	Sugar *zap.SugaredLogger
+	once  sync.Once
+)
+
+func init() {
+	once.Do(func() {
+		Sugar = newLogger()
+	})
+}
+func newLogger() *zap.SugaredLogger {
+	logger, _ := zap.NewDevelopment()
 	sugar := logger.Sugar()
 	return sugar
 }

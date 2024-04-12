@@ -13,7 +13,7 @@ const (
 func Newdb() (*sql.DB, error) {
 	db, err := sql.Open("mysql", DatabaseUrl)
 	if err != nil {
-		diylog.NewLogger().Errorln(err)
+		diylog.Sugar.Errorln(err)
 	}
 	return db, err
 }

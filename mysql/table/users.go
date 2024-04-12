@@ -14,7 +14,7 @@ type Users struct {
 }
 
 func IsUserExists(username string, db *sql.DB) bool {
-	logger := diylog.NewLogger()
+	logger := diylog.Sugar
 	defer func() {
 		err := logger.Sync()
 		if err != nil {
@@ -47,7 +47,7 @@ func IsUserExists(username string, db *sql.DB) bool {
 }
 
 func IsActive(username string, db *sql.DB) bool {
-	logger := diylog.NewLogger()
+	logger := diylog.Sugar
 	defer func() {
 		err := logger.Sync()
 		if err != nil {
@@ -85,7 +85,7 @@ func IsActive(username string, db *sql.DB) bool {
 }
 
 func VerifyPassword(username, password string, db *sql.DB) bool {
-	logger := diylog.NewLogger()
+	logger := diylog.Sugar
 	defer func() {
 		err := logger.Sync()
 		if err != nil {
