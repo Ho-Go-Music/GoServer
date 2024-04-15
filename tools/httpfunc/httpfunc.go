@@ -7,11 +7,13 @@ import (
 	"acaibird.com/request_body"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"time"
 )
 
 func LogInHandler(w http.ResponseWriter, r *http.Request) {
-	logger := diylog.NewLogger()
+	logger := diylog.Sugar
 	defer func() {
 		err := logger.Sync()
 		if err != nil {
@@ -63,4 +65,35 @@ func LogInHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("success"))
+}
+
+func RootHandler(w http.ResponseWriter, r *http.Request) {
+	cookie := &http.Cookie{
+		Name:  "my-cookie",
+		Value: "hello-world",
+
+		// Set cookie expiration time
+		Expires: time.Now().Add(7 * 24 * time.Hour), // 7 days
+
+		// Set cookie domain
+		Domain: "localhost",
+
+		// Set cookie path
+		Path: "/",
+
+		// Set whether cookie should be sent over HTTPS only
+		Secure: true,
+
+		// Set whether cookie should be accessible only by the server
+		HttpOnly: true,
+	}
+
+	http.SetCookie(w, cookie)
+	fmt.Fprintln(w, "Cookie set successfully!")
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	_, err := w.Write([]byte("success"))
+	if err != nil {
+		return
+	}
 }
