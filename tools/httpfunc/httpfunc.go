@@ -11,7 +11,6 @@ import (
 	"database/sql"
 	"encoding/gob"
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/sessions"
 	"net/http"
 	"time"
@@ -100,44 +99,53 @@ func LogInHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
-	//cookie := &http.Cookie{
-	//	Name:  "my-cookie",
-	//	Value: "hello-world",
-	//
-	//	// Set cookie expiration time
-	//	Expires: time.Now().Add(7 * 24 * time.Hour), // 7 days
-	//
-	//	// Set cookie domain
-	//	Domain: "localhost",
-	//
-	//	// Set cookie path
-	//	Path: "/",
-	//
-	//	// Set whether cookie should be sent over HTTPS only
-	//	Secure: true,
-	//
-	//	// Set whether cookie should be accessible only by the server
-	//	HttpOnly: true,
-	//}
-	//http.SetCookie(w, cookie)
-
-	store := sessions.NewCookieStore([]byte("secret-key-go"))
-	session, _ := store.Get(r, "session")
-	session.Values["sh1a"] = "sha256"
-	if info, ok := session.Values["sh1a"].(string); !ok {
-		fmt.Println("name is not exist")
-		fmt.Println(info)
+	name := r.URL.Query().Get("name")
+	session, err := sessions2.Store.Get(r, name)
+	if err != nil {
+		http.Error(w, "InternalServerError", http.StatusInternalServerError)
 		return
-	} else {
-		fmt.Println(info)
 	}
-	session.Options = &sessions.Options{
-		MaxAge: 0,
+	if session.IsNew {
+		session.Save(r, w)
+		println("session is new")
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Unauthorized"))
+		return
 	}
-	session.Save(r, w)
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
-	_, err := w.Write([]byte("success"))
+	w.Write([]byte("Hello, " + name))
+}
+
+func LogOutHandler(w http.ResponseWriter, r *http.Request) {
+	username := r.FormValue("username")
+	session, err := sessions2.Store.Get(r, "session")
+	if err != nil {
+		http.Error(w, "InternalServerError", http.StatusInternalServerError)
+		return
+	}
+	session.Options = &sessions.Options{
+		MaxAge: -1,
+	}
+	delete(session.Values, username)
+	err = session.Save(r, w)
+	if err != nil {
+		http.Error(w, "InternalServerError", http.StatusInternalServerError)
+		return
+	}
+
+	redisClient := redis.GetRedisClient()
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+	_, err = redisClient.Del(ctx, username).Result()
+	if err != nil {
+		http.Error(w, "InternalServerError", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write([]byte("success"))
 	if err != nil {
 		return
 	}
