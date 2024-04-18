@@ -5,9 +5,11 @@ import (
 	"acaibird.com/mysql"
 	"acaibird.com/mysql/table"
 	"acaibird.com/request_body"
+	sessions2 "acaibird.com/sessions"
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/sessions"
 	"net/http"
 	"time"
 )
@@ -61,6 +63,13 @@ func LogInHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "NotActive", http.StatusForbidden)
 		return
 	}
+
+	session, err := sessions2.Store.Get(r, "session")
+	session.Values[user.Username] = time.Now()
+	session.Options = &sessions.Options{
+		MaxAge: 60 * 60 * 2,
+	}
+	session.Save(r, w)
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
@@ -68,28 +77,41 @@ func LogInHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
-	cookie := &http.Cookie{
-		Name:  "my-cookie",
-		Value: "hello-world",
+	//cookie := &http.Cookie{
+	//	Name:  "my-cookie",
+	//	Value: "hello-world",
+	//
+	//	// Set cookie expiration time
+	//	Expires: time.Now().Add(7 * 24 * time.Hour), // 7 days
+	//
+	//	// Set cookie domain
+	//	Domain: "localhost",
+	//
+	//	// Set cookie path
+	//	Path: "/",
+	//
+	//	// Set whether cookie should be sent over HTTPS only
+	//	Secure: true,
+	//
+	//	// Set whether cookie should be accessible only by the server
+	//	HttpOnly: true,
+	//}
+	//http.SetCookie(w, cookie)
 
-		// Set cookie expiration time
-		Expires: time.Now().Add(7 * 24 * time.Hour), // 7 days
-
-		// Set cookie domain
-		Domain: "localhost",
-
-		// Set cookie path
-		Path: "/",
-
-		// Set whether cookie should be sent over HTTPS only
-		Secure: true,
-
-		// Set whether cookie should be accessible only by the server
-		HttpOnly: true,
+	store := sessions.NewCookieStore([]byte("secret-key-go"))
+	session, _ := store.Get(r, "session")
+	session.Values["sh1a"] = "sha256"
+	if info, ok := session.Values["sh1a"].(string); !ok {
+		fmt.Println("name is not exist")
+		fmt.Println(info)
+		return
+	} else {
+		fmt.Println(info)
 	}
-
-	http.SetCookie(w, cookie)
-	fmt.Fprintln(w, "Cookie set successfully!")
+	session.Options = &sessions.Options{
+		MaxAge: 0,
+	}
+	session.Save(r, w)
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
 	_, err := w.Write([]byte("success"))

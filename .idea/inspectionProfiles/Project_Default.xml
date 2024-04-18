@@ -4,6 +4,7 @@
     <inspection_tool class="GoDfaErrorMayBeNotNil" enabled="true" level="WARNING" enabled_by_default="true">
       <methods>
         <method importPath="database/sql" receiver="*Stmt" name="Query" />
+        <method importPath="github.com/gorilla/sessions" receiver="*CookieStore" name="Get" />
       </methods>
     </inspection_tool>
   </profile>
