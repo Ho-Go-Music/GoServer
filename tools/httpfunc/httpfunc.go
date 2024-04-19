@@ -17,6 +17,7 @@ import (
 )
 
 func LogInHandler(w http.ResponseWriter, r *http.Request) {
+	// log
 	logger := diylog.Sugar
 	defer func() {
 		err := logger.Sync()
@@ -24,19 +25,12 @@ func LogInHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}()
-	// request method check
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
+	// redis
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+	redisClient := redis.GetRedisClient()
 
-	var user request_body.User
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
+	// sql
 	db, err := mysql.Newdb()
 	if err != nil {
 		logger.Errorln("Database error", err)
@@ -44,13 +38,32 @@ func LogInHandler(w http.ResponseWriter, r *http.Request) {
 		return
 
 	}
-
 	defer func(db *sql.DB) {
 		err := db.Close()
 		if err != nil {
 			logger.Errorln(err)
 		}
 	}(db)
+
+	// request method check
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var user request_body.User
+	err = json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		diylog.Sugar.Errorln("json decode throw a error ", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	val, _ := redisClient.Get(ctx, user.Username).Result()
+	if val != "" {
+		http.Error(w, "Repeat login", http.StatusConflict)
+		return
+	}
 
 	if userExit := table.IsUserExists(user.Username, db); !userExit {
 		http.Error(w, "NotFound", http.StatusNotFound)
@@ -79,9 +92,6 @@ func LogInHandler(w http.ResponseWriter, r *http.Request) {
 		diylog.Sugar.Errorln("session save throw a error ", err)
 	}
 
-	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
-	defer cancel()
-	redisClient := redis.GetRedisClient()
 	_, err = redisClient.Set(ctx, user.Username, time.Now(), 60*time.Minute).Result()
 	if err != nil {
 		diylog.Sugar.Errorln("redis save online user info throw a error ", err)
@@ -91,11 +101,7 @@ func LogInHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
-
-	_, err = w.Write([]byte("success"))
-	if err != nil {
-		return
-	}
+	w.Write([]byte("success"))
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
