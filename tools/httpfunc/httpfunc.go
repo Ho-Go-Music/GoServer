@@ -11,7 +11,9 @@ import (
 	"database/sql"
 	"encoding/gob"
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/sessions"
+	redis2 "github.com/redis/go-redis/v9"
 	"net/http"
 	"time"
 )
@@ -29,6 +31,12 @@ func LogInHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 	redisClient := redis.GetRedisClient()
+	defer func(redisClient *redis2.Client) {
+		err := redisClient.Close()
+		if err != nil {
+
+		}
+	}(redisClient)
 
 	// sql
 	db, err := mysql.Newdb()
@@ -51,11 +59,13 @@ func LogInHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// repeat login check
 	var user request_body.User
 	err = json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		diylog.Sugar.Errorln("json decode throw a error ", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Println("repeat login")
 		return
 	}
 
@@ -85,7 +95,12 @@ func LogInHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := sessions2.Store.Get(r, "session")
 	session.Values[user.Username] = time.Now()
 	session.Options = &sessions.Options{
-		MaxAge: 60 * 60 * 2,
+		MaxAge:   60 * 60 * 2,
+		Domain:   "localhost",
+		Path:     "/",
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
+		HttpOnly: false,
 	}
 	err = session.Save(r, w)
 	if err != nil {
@@ -98,7 +113,6 @@ func LogInHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	diylog.Sugar.Infoln("redis save online user info successfully")
 
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("success"))
@@ -125,11 +139,15 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 
 func LogOutHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
+
+	// get user's session
 	session, err := sessions2.Store.Get(r, "session")
 	if err != nil {
 		http.Error(w, "InternalServerError", http.StatusInternalServerError)
 		return
 	}
+
+	// delete user's session,MaxAge: -1 means delete the session
 	session.Options = &sessions.Options{
 		MaxAge: -1,
 	}
@@ -140,7 +158,9 @@ func LogOutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// delete user's online info in redis
 	redisClient := redis.GetRedisClient()
+	//
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 	_, err = redisClient.Del(ctx, username).Result()
@@ -149,6 +169,25 @@ func LogOutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write([]byte("success"))
+	if err != nil {
+		return
+	}
+}
+
+// TODO 获取瑟前端cookie中的session数据检验用户身份
+func TestHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := sessions2.Store.Get(r, "session")
+	if err != nil {
+		println(err.Error())
+	}
+	if v, ok := session.Values["root"]; !ok {
+		print("no root")
+	} else {
+		fmt.Printf("%#v", v)
+	}
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write([]byte("success"))
