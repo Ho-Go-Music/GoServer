@@ -15,6 +15,7 @@ import (
 	"github.com/gorilla/sessions"
 	redis2 "github.com/redis/go-redis/v9"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -138,17 +139,20 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 
 func LogOutHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
-
 	// get user's session
 	session, err := sessions2.Store.Get(r, "session")
 	if err != nil {
 		http.Error(w, "InternalServerError", http.StatusInternalServerError)
 		return
 	}
-
 	// delete user's session,MaxAge: -1 means delete the session
+	Domain := strings.Join(strings.Split(r.Host, ":"), "")
 	session.Options = &sessions.Options{
-		MaxAge: -1,
+		Path:     "/",
+		Domain:   Domain,
+		MaxAge:   -1,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
 	}
 	delete(session.Values, username)
 	err = session.Save(r, w)
@@ -156,10 +160,8 @@ func LogOutHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "InternalServerError", http.StatusInternalServerError)
 		return
 	}
-
 	// delete user's online info in redis
 	redisClient := redis.GetRedisClient()
-	//
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 	_, err = redisClient.Del(ctx, username).Result()
@@ -167,7 +169,7 @@ func LogOutHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "InternalServerError", http.StatusInternalServerError)
 		return
 	}
-
+	// response
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write([]byte("success"))
