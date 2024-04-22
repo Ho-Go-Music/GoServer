@@ -1,0 +1,160 @@
+# General ignores
+.DS_Store          # macOS-specific metadata
+Thumbs.db          # Windows thumbnail cache
+*.swp              # Vim swap files
+*~                 # Emacs backup files
+__pycache__        # Python bytecode cache
+*.py[cod]          # Python bytecode files
+.pytest_cache      # pytest cache
+.vscode            # VSCode workspace settings
+.idea              # JetBrains IDE project files
+.project           # Eclipse project file
+.classpath         # Eclipse classpath file
+.settings          # Eclipse settings directory
+.history           # Shell command history
+.log               # Log files
+.npmrc             # Local NPM configuration
+yarn.lock          # Yarn lockfile (if using package-lock.json)
+package-lock.json  # NPM lockfile (if using yarn.lock)
+
+# Build artifacts and intermediates
+dist/
+build/
+target/
+out/
+release/
+deploy/
+*.jar
+*.war
+*.ear
+*.apk
+*.ipa
+*.app
+*.exe
+*.dll
+*.pdb
+*.o
+*.so
+*.dylib
+*.a
+*.dSYM
+
+# Dependency directories
+node_modules/
+bower_components/
+vendor/
+packages/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swl
+*.swo
+*.lock
+
+# Environment-specific files
+.env
+.env.*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor-specific files and directories
+.editorconfig
+.vs
+.vscode-tasks
+.vscode-test
+.vscode-insiders
+.sublime-project
+.sublime-workspace
+.projectile
+.tern-project
+.c9revisions
+.jshintrc
+.eslintrc
+.prettierrc
+.stylelintrc
+.flowconfig
+
+# User-specific config files (might want to review these)
+.gitconfig
+.gitattributes
+.gitignore_global
+
+# Local database files (SQLite, etc.)
+*.sqlite
+*.db
+*.sqlitedb
+*.mdf
+*.ldf
+
+# IDE or build system caches
+.gradle
+.gradletasknamecache
+.gradle-build-cache-*
+.gradle-test-kit-cache-*
+.gradle-test-output
+.gradle-plugins
+.gradle-wrapper
+.gradle-wrapper.properties
+.gradlew
+.gradle-local.properties
+.gradle.properties
+.gradle-plugins-metadata.properties
+.gradle-proxy.properties
+.gradle-tooling-api-cache
+.metadata
+.run
+.settings
+.tscache
+.tsserverlog
+.tsbuildinfo
+.eslintcache
+.yarn-integrity
+.yarn-error.log
+.yarn-metadata.json
+.yarn-offline-mirror
+.yarn-offline-mirror-retry
+.yarnrc.yml
+yarn-error.log
+
+# Coverage reports
+coverage/
+lcov.info
+cobertura.xml
+jacoco/
+
+# Local server logs
+server.log
+access.log
+error.log
+nohup.out
+
+# Docker-related files
+docker-compose.override.yml
+.dockerignore
+.docker/
+.image/
+.container/
+.volumes/
+.stack/
+.swarm/
+.network/
+.secrets/
+.configs/
+.certificates/
+.compose/
+.service/
+.cluster/
+.machine/
+.registry/
+.swarm/
+.traefik/
+.weave/
+.env.docker.*
+.env.docker-compose.*
+
+# End of file
