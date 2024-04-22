@@ -5,7 +5,6 @@ import (
 	sessions2 "acaibird.com/sessions"
 	"encoding/gob"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -53,17 +52,17 @@ func Identify(next http.Handler) http.Handler {
 		}
 		// if session is new , user has not logged in
 		if session.IsNew {
-			print("new session")
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
+			//print("new session")
+			//http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			//return
 		}
 		// get username from query parameters
-		username := strings.Join(r.URL.Query()["username"], "")
+		//username := strings.Join(r.URL.Query()["username"], "")
 		// Check session integrity
-		if _, ok := session.Values[username]; !ok {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
+		//if _, ok := session.Values[username]; !ok {
+		//	http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		//	return
+		//}
 		next.ServeHTTP(w, r)
 	})
 }

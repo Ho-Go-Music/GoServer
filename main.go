@@ -16,8 +16,8 @@ func main() {
 	mux.HandleFunc("/test", httpfunc.TestHandler)
 	// middleware
 	var Handler http.Handler
-	Handler = middleware.CorsMiddleware(mux)
-	Handler = middleware.Identify(Handler)
+	Handler = middleware.Identify(mux)
+	Handler = middleware.CorsMiddleware(Handler)
 
 	err := http.ListenAndServe(":8080", Handler)
 	if err != nil {
