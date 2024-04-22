@@ -5,6 +5,7 @@ import (
 	sessions2 "acaibird.com/sessions"
 	"encoding/gob"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -44,25 +45,25 @@ func Identify(next http.Handler) http.Handler {
 			http.Error(w, "StatusInternalServerError", http.StatusInternalServerError)
 			return
 		}
-		// There is a situation where the user has not logged in yet
-		// the /login routing request is directly handed over to the corresponding handler for processing.
+		//There is a situation where the user has not logged in yet
+		//the /login routing request is directly handed over to the corresponding handler for processing.
 		if r.URL.Path == "/login" {
 			next.ServeHTTP(w, r)
 			return
 		}
 		// if session is new , user has not logged in
 		if session.IsNew {
-			//print("new session")
-			//http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			//return
+			print("new session")
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
 		}
-		// get username from query parameters
-		//username := strings.Join(r.URL.Query()["username"], "")
-		// Check session integrity
-		//if _, ok := session.Values[username]; !ok {
-		//	http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		//	return
-		//}
+		//get username from query parameters
+		username := strings.Join(r.URL.Query()["username"], "")
+		//Check session integrity
+		if _, ok := session.Values[username]; !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
 		next.ServeHTTP(w, r)
 	})
 }

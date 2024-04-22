@@ -176,7 +176,6 @@ func LogOutHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// TODO 获取瑟前端cookie中的session数据检验用户身份
 func TestHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := sessions2.Store.Get(r, "session")
 	if err != nil {
