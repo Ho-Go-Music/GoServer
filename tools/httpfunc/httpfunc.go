@@ -37,7 +37,6 @@ func LogInHandler(w http.ResponseWriter, r *http.Request) {
 
 		}
 	}(redisClient)
-
 	// sql
 	db, err := mysql.Newdb()
 	if err != nil {
@@ -52,14 +51,12 @@ func LogInHandler(w http.ResponseWriter, r *http.Request) {
 			logger.Errorln(err)
 		}
 	}(db)
-
 	// request method check
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-
-	// repeat login check
+	// parse request body
 	var user request_body.User
 	err = json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -68,31 +65,33 @@ func LogInHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("repeat login")
 		return
 	}
-
-	val, _ := redisClient.Get(ctx, user.Username).Result()
-	if val != "" {
-		http.Error(w, "Repeat login", http.StatusConflict)
-		return
-	}
-
+	//// repeat login check
+	//val, _ := redisClient.Get(ctx, user.Username).Result()
+	//if val != "" {
+	//	http.Error(w, "Repeat login", http.StatusConflict)
+	//	return
+	//}
+	// user dose not exit
 	if userExit := table.IsUserExists(user.Username, db); !userExit {
 		http.Error(w, "NotFound", http.StatusNotFound)
 		return
 	}
+	// password error
 	if passwordCorrect := table.VerifyPassword(user.Username, user.Password, db); !passwordCorrect {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-
+	// user status is disable
 	if isActive := table.IsActive(user.Username, db); !isActive {
 		http.Error(w, "NotActive", http.StatusForbidden)
 		return
 	}
-
 	// 编码器（发送器）和解码器（接收器）之间进行二进制数据流的发送，
 	// 一般用来传递远端程序调用的参数和结果，比如net/rpc包就有用到这个
 	gob.Register(time.Time{})
+	// session
 	session, err := sessions2.Store.Get(r, "session")
+	// save session data to cookie
 	session.Values[user.Username] = time.Now()
 	session.Options = &sessions.Options{
 		MaxAge:   60 * 60 * 2,
@@ -106,13 +105,13 @@ func LogInHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		diylog.Sugar.Errorln("session save throw a error ", err)
 	}
-
+	// save user logged time in redis
 	_, err = redisClient.Set(ctx, user.Username, time.Now(), 60*time.Minute).Result()
 	if err != nil {
 		diylog.Sugar.Errorln("redis save online user info throw a error ", err)
 	}
-	diylog.Sugar.Infoln("redis save online user info successfully")
-
+	diylog.Sugar.Infoln("redis save online user log in time successfully\n")
+	// response
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("success"))
@@ -186,7 +185,7 @@ func TestHandler(w http.ResponseWriter, r *http.Request) {
 	if v, ok := session.Values["root"]; !ok {
 		print("no root")
 	} else {
-		fmt.Printf("%#v", v)
+		diylog.Sugar.Infoln(v)
 	}
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)

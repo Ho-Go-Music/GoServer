@@ -8,12 +8,18 @@ import (
 )
 
 func main() {
+	// server routing
 	mux := http.NewServeMux()
 	mux.HandleFunc("/login", httpfunc.LogInHandler)
 	mux.HandleFunc("/", httpfunc.RootHandler)
 	mux.HandleFunc("/logout", httpfunc.LogOutHandler)
-	mux.HandleFunc("/re", httpfunc.RootHandler)
-	err := http.ListenAndServe(":8080", middleware.CorsMiddleware(mux))
+	mux.HandleFunc("/test", httpfunc.TestHandler)
+	// middleware
+	var Handler http.Handler
+	Handler = middleware.CorsMiddleware(mux)
+	Handler = middleware.Identify(Handler)
+
+	err := http.ListenAndServe(":8080", Handler)
 	if err != nil {
 		diylog.Sugar.Errorln(err)
 		return
