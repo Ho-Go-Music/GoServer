@@ -11,3 +11,16 @@ base net/http, gin, gorm, mysql, redis, jwt, viper, logrus, go mod, docker, dock
 #### [gorm](https://gorm.io/zh_CN/docs/index.html): GORM是一个适用于Go的ORM库，它的主要特性是支持多种数据库，例如MySQL、PostgreSQL、SQLite、SQL Server等。
 #### [gin](https://gin-gonic.com/zh-cn/docs/): Gin是一个用Go（Golang）编写的Web框架。它具有类似于Martini的API，但性能更好。如果您需要性能和良好的生产质量，您会发现Gin非常有用。
 #### [go-toml](https://github.com/pelletier/go-toml):解析toml配置文件
+## 3. Install 
+要使用 go get 指定特定版本的包，可以使用带有版本号的包路径。以下是一些使用 go get 指定版本的示例：
+
+1. 指定特定版本的包： `go get github. com/examp le/examp leav1.2.3`
+这将下载并安装` github. com/example/example` 包的1.2.3版本。
+
+2. 使用特定的Git提交哈希值：`go get github. com/examp le/examp leacommit _hash`
+   这将下载并安装` github.com/example/example` 包中特定的Git提交。
+3. 使用特定的Git标签：`go get github. com/examp le/examp Leav1.2.3`
+   这将下载并安装 github.com/example/example 包的特定Git标签。
+4. 使用特定的Git分支：`go get github.com/examp le/examp le@branch_name`
+   这将下载并安装 github.com/example/example 包中特定的Git分支。
+   请注意，使用 go get 指定版本时，需要使用 ◎符号将包路径和版本号或Git信息分隔开来。
