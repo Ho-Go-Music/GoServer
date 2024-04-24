@@ -1,9 +1,9 @@
 package tools
 
 import (
-	diylog "acaibird.com/log"
 	"fmt"
 	"github.com/BurntSushi/toml"
+	diylog "github.com/Ho-Go-Music/GoServer/log"
 	"log"
 	"os"
 	"path/filepath"

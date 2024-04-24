@@ -1,9 +1,9 @@
 package mysql
 
 import (
-	diylog "acaibird.com/log"
-	"acaibird.com/tools"
 	"database/sql"
+	diylog "github.com/Ho-Go-Music/GoServer/log"
+	"github.com/Ho-Go-Music/GoServer/tools"
 	_ "github.com/go-sql-driver/mysql"
 )
 

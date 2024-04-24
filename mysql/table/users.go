@@ -1,8 +1,8 @@
 package table
 
 import (
-	diylog "acaibird.com/log"
 	"database/sql"
+	diylog "github.com/Ho-Go-Music/GoServer/log"
 )
 
 type Users struct {

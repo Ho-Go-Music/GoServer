@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	diylog "acaibird.com/log"
-	sessions2 "acaibird.com/sessions"
 	"encoding/gob"
+	diylog "github.com/Ho-Go-Music/GoServer/log"
+	sessions2 "github.com/Ho-Go-Music/GoServer/sessions"
 	"net/http"
 	"strings"
 	"time"

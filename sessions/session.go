@@ -12,6 +12,6 @@ var (
 
 func init() {
 	once.Do(func() {
-		Store = sessions.NewCookieStore([]byte("acaibird.com"))
+		Store = sessions.NewCookieStore([]byte("github.com/Ho-Go-Music/GoServer"))
 	})
 }

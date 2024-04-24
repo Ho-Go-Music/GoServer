@@ -1,9 +1,9 @@
 package main
 
 import (
-	diylog "acaibird.com/log"
-	"acaibird.com/tools/httpfunc"
-	"acaibird.com/tools/middleware"
+	diylog "github.com/Ho-Go-Music/GoServer/log"
+	"github.com/Ho-Go-Music/GoServer/tools/httpfunc"
+	"github.com/Ho-Go-Music/GoServer/tools/middleware"
 	"net/http"
 )
 

@@ -1,17 +1,17 @@
 package httpfunc
 
 import (
-	diylog "acaibird.com/log"
-	"acaibird.com/mysql"
-	"acaibird.com/mysql/table"
-	"acaibird.com/redis"
-	"acaibird.com/request_body"
-	sessions2 "acaibird.com/sessions"
 	"context"
 	"database/sql"
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
+	diylog "github.com/Ho-Go-Music/GoServer/log"
+	"github.com/Ho-Go-Music/GoServer/mysql"
+	"github.com/Ho-Go-Music/GoServer/mysql/table"
+	"github.com/Ho-Go-Music/GoServer/redis"
+	"github.com/Ho-Go-Music/GoServer/request_body"
+	sessions2 "github.com/Ho-Go-Music/GoServer/sessions"
 	"github.com/gorilla/sessions"
 	redis2 "github.com/redis/go-redis/v9"
 	"net/http"
