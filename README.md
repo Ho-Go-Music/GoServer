@@ -10,3 +10,4 @@ base net/http, gin, gorm, mysql, redis, jwt, viper, logrus, go mod, docker, dock
 #### [go-redis](https://redis.io/docs/latest/develop/connect/clients/go/): go-redis是一个用于Go语言的Redis客户端。
 #### [gorm](https://gorm.io/zh_CN/docs/index.html): GORM是一个适用于Go的ORM库，它的主要特性是支持多种数据库，例如MySQL、PostgreSQL、SQLite、SQL Server等。
 #### [gin](https://gin-gonic.com/zh-cn/docs/): Gin是一个用Go（Golang）编写的Web框架。它具有类似于Martini的API，但性能更好。如果您需要性能和良好的生产质量，您会发现Gin非常有用。
+#### [go-toml](https://github.com/pelletier/go-toml):解析toml配置文件

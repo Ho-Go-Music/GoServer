@@ -2,12 +2,19 @@ package mysql
 
 import (
 	diylog "acaibird.com/log"
+	"acaibird.com/tools"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 )
 
-const (
-	DatabaseUrl = "root:775028@tcp(127.0.0.1:3306)/WebMusic?charset=utf8mb4&parseTime=True&loc=Local"
+var (
+	DatabaseUrl = tools.Conf.MySQLServer.User + ":" + tools.Conf.MySQLServer.Password +
+		"@" + "tcp" +
+		"(" + tools.Conf.MySQLServer.Host + ":" + tools.Conf.MySQLServer.Port + ")" +
+		"/" + tools.Conf.MySQLServer.Database +
+		"?" + "charset=" + tools.Conf.MySQLServer.Charset +
+		"&" + "parseTime=" + tools.Conf.MySQLServer.ParseTime +
+		"&" + "loc=" + tools.Conf.MySQLServer.Loc
 )
 
 func Newdb() (*sql.DB, error) {

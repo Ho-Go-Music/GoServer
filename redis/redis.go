@@ -1,17 +1,17 @@
 package redis
 
 import (
+	"acaibird.com/tools"
 	"github.com/redis/go-redis/v9"
 )
 
 func GetRedisClient() *redis.Client {
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:           "localhost:6379",
-		Password:       "775028", // 如果密码已设置，请提供密码
-		DB:             0,        // 选择要使用的数据库
-		MaxActiveConns: 100,
-		MaxIdleConns:   10,
+		Addr:           tools.Conf.RedisServer.Host + ":" + tools.Conf.RedisServer.Port,
+		Password:       tools.Conf.RedisServer.Password,
+		DB:             tools.Conf.RedisServer.Database, // Selecting the database to be used
+		MaxActiveConns: tools.Conf.RedisServer.MaxActiveConns,
+		MaxIdleConns:   tools.Conf.RedisServer.MaxIdleConns,
 	})
-
 	return redisClient
 }
