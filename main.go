@@ -14,10 +14,13 @@ func main() {
 	mux.HandleFunc("/", httpfunc.RootHandler)
 	mux.HandleFunc("/logout", httpfunc.LogOutHandler)
 	mux.HandleFunc("/test", httpfunc.TestHandler)
+	// url path mapping fileSystem
+	fs := http.FileServer(http.Dir("./public"))
+	mux.Handle("/static/", http.StripPrefix("/static/", fs))
 	// middleware
 	var Handler http.Handler
-	Handler = middleware.Identify(mux)
-	Handler = middleware.CorsMiddleware(Handler)
+	//Handler = middleware.Identify(mux)
+	Handler = middleware.CorsMiddleware(mux)
 
 	err := http.ListenAndServe(":8080", Handler)
 	if err != nil {

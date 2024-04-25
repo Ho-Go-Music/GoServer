@@ -94,7 +94,7 @@ func ParseToml() {
 		}
 		log.Printf("%s%-10s %s\n", indent, meta.Type(k...), k)
 	}
-	fmt.Print("\nUndecoded")
+	fmt.Print("\nUndecoded\n")
 	keys = meta.Undecoded()
 	sort.Slice(keys, func(i, j int) bool { return keys[i].String() < keys[j].String() })
 	for i, k := range keys {
