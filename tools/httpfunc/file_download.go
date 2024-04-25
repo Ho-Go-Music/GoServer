@@ -15,7 +15,7 @@ import (
 func FileDownload(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	//filePath := strings.TrimPrefix(path, "/static")
-	filePath := strings.Replace(path, "/static", "/public", 1)
+	filePath := strings.Replace(path, "/download", "/public", 1)
 	//Retrieve  information about the current stack frame by passing 0 as a parameter
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {

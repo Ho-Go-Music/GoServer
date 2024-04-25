@@ -15,9 +15,11 @@ func main() {
 	mux.HandleFunc("/logout", httpfunc.LogOutHandler)
 	mux.HandleFunc("/test", httpfunc.TestHandler)
 	// url path mapping fileSystem
-	//fs := http.FileServer(http.Dir("./public"))
-	//mux.Handle("/static/", http.StripPrefix("/static/", fs))
-	mux.HandleFunc("/static/", httpfunc.GetFile)
+	fs := http.FileServer(http.Dir("./public"))
+	// preview file in browser
+	mux.Handle("/static/", http.StripPrefix("/static/", fs))
+	// browser automatically download file
+	mux.HandleFunc("/download/", httpfunc.FileDownload)
 	// middleware
 	var Handler http.Handler
 	//Handler = middleware.Identify(mux)
