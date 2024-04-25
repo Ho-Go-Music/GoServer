@@ -15,8 +15,9 @@ func main() {
 	mux.HandleFunc("/logout", httpfunc.LogOutHandler)
 	mux.HandleFunc("/test", httpfunc.TestHandler)
 	// url path mapping fileSystem
-	fs := http.FileServer(http.Dir("./public"))
-	mux.Handle("/static/", http.StripPrefix("/static/", fs))
+	//fs := http.FileServer(http.Dir("./public"))
+	//mux.Handle("/static/", http.StripPrefix("/static/", fs))
+	mux.HandleFunc("/static/", httpfunc.GetFile)
 	// middleware
 	var Handler http.Handler
 	//Handler = middleware.Identify(mux)
