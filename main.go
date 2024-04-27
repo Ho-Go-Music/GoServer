@@ -3,7 +3,6 @@ package main
 import (
 	diylog "github.com/Ho-Go-Music/GoServer/log"
 	"github.com/Ho-Go-Music/GoServer/tools/httpfunc"
-	"github.com/Ho-Go-Music/GoServer/tools/middleware"
 	"net/http"
 )
 
@@ -20,12 +19,14 @@ func main() {
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
 	// browser automatically download file
 	mux.HandleFunc("/download/", httpfunc.FileDownload)
-	// middleware
-	var Handler http.Handler
+	//  file upload
+	mux.HandleFunc("/upload", httpfunc.FileUpload)
+	// apply middleware
+	//var Handler http.Handler
 	//Handler = middleware.Identify(mux)
-	Handler = middleware.CorsMiddleware(mux)
+	//Handler = middleware.CorsMiddleware(mux)
 
-	err := http.ListenAndServe(":8080", Handler)
+	err := http.ListenAndServe(":8080", mux)
 	if err != nil {
 		diylog.Sugar.Errorln(err)
 		return

@@ -24,6 +24,7 @@ target/
 out/
 release/
 deploy/
+public/
 *.jar
 *.war
 *.ear

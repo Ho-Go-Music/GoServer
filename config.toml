@@ -26,3 +26,5 @@ password="775028"
 database=0
 maxActiveConns=100
 maxIdleConns=10
+[static-files-path]
+path="/Users/acaibird/Documents/CodeExperimentSpace/Go/HoGoMusic/public/"

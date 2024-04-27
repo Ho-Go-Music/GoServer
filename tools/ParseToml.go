@@ -42,6 +42,9 @@ type Config struct {
 		MaxActiveConns int    `toml:"maxActiveConns"`
 		MaxIdleConns   int    `toml:"maxIdleConns"`
 	} `toml:"redis"`
+	StaticFilePath struct {
+		Path string `toml:"path"`
+	} `toml:"static-files-path"`
 }
 
 var (
